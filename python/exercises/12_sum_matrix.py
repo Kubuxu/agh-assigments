@@ -3,8 +3,8 @@ import random
 def randMatrix(size):
     return [[random.random() for _ in range(size)] for _ in range(size)]
 
-matrix1 = randMatrix(5)
-matrix2 = randMatrix(5)
+matrix1 = randMatrix(128)
+matrix2 = randMatrix(128)
 print("Matrix1")
 print(*matrix1, sep='\n')
 print("Matrix2")

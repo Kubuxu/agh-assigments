@@ -127,7 +127,8 @@ def core(data, done, output, start, clk, reset):
 
             elif state == t_State.CALCULATING:
                 # pull output of current round that was started before
-                # the same conversion issue is happens here
+
+                # the same conversion issue happens here
                 for j in range(16):
                     i_start = iter_index[(i%2)*16 + j]
                     i_end = i_start+1

@@ -8,7 +8,7 @@ quarter round of ChaCha20 and the `core` block which is responsible for scheduli
 four `q_round` blocks and mixing data between `q_round` blocks.
 
 The `core` exposes `data`, `start` and `reset` input signals (plus `clock`), and outputs
-result of ChaCha20 ready to be XORed do encrypt or decrypt 64 bytes of data, along with
+result of ChaCha20 ready to be XORed to encrypt or decrypt 64 bytes of data, along with
 `done` signal when `output` is ready to be read.
 
 The testbed is contained in `tb.py`. It tests both the whole core as well as the `q_round` block.

@@ -127,6 +127,7 @@ def core(data, done, output, start, clk, reset):
 
             elif state == t_State.CALCULATING:
                 # pull output of current round that was started before
+                # the same conversion issue is happens here
                 for j in range(16):
                     i_start = iter_index[(i%2)*16 + j]
                     i_end = i_start+1
@@ -137,10 +138,11 @@ def core(data, done, output, start, clk, reset):
                     state = t_State.WAITING
                     done.next = True
                 else:
+                    # start next round
                     i += 1
-                    # start the next round
+                    # and here
                     for j in range(16):
-                        i_start = iter_index[(i%2)* 16+ j]
+                        i_start = iter_index[(i%2)*16 + j]
                         i_end = i_start + 1
                         qsin[j].next = uint32(internal[32*i_end:32*i_start])
 

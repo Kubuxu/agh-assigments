@@ -52,14 +52,8 @@ def test_GaussianRandomProjection():
     for grp in [GaussianRandomProjection(eps=eps),
                 GaussianRandomProjection(n_components = 550, eps=eps),
                 GaussianRandomProjection(n_components = 1100, eps=eps)]:
-        
         grp.fit(X)
-
-        if grp.n_components != 'auto':
-            assert grp.n_components_ == grp.n_components
-
         Xnew = grp.transform(X)
-        assert Xnew.shape == (X.shape[0], grp.n_components_)
 
         # collect distances between all vectors in X
         org_dist = euclidean_distances(X)
@@ -70,7 +64,6 @@ def test_GaussianRandomProjection():
         new_dist = euclidean_distances(Xnew)
         new_dist = new_dist[non_self]
         ratios = new_dist / org_dist
-
 
         # verify that johnson lemma was held
         assert (ratios < 1+eps).all()

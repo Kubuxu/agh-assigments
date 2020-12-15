@@ -17,7 +17,6 @@ def q_round(ai, bi, ci, di, ao, bo, co, do):
 
     @always_comb
     def qround():
-        # val necessary for some reason
         a = ai.val
         b = bi.val
         c = ci.val

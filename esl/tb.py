@@ -46,6 +46,10 @@ def convert_qround():
     q1 = core.q_round(*signals) 
     q1.convert(hdl='Verilog')
 
+def format_state(state):
+    return ('%08X'*16) % tuple(reversed(state))
+def format_output(output):
+    return '%0128X' % output
 
 @block
 def testbench_core():
@@ -71,11 +75,13 @@ def testbench_core():
         start.next = False
         yield done.posedge
         print('Done')
-        print('Result: %0128X' % output.val)
-        target = ('%08X'*16) % tuple(reversed(chacha20.state([0] * 12)))
+        res_str = format_output(output.val)
+        print('Result: ' + res_str)
+        target = format_state(chacha20.state([0]*12))
         print('Should: ' + target)
+        
 
-        assert('%0128X' % output.val == target) 
+        assert res_str == target
 
         yield clock.negedge
         data.next = 555
@@ -84,26 +90,29 @@ def testbench_core():
         start.next = False
         yield done.posedge
 
-        print('Done')
-        print('Result: %0128X' % output.val)
-        target = ('%08X'*16) % tuple(reversed(chacha20.state([555] + ([0] * 11))))
+        res_str = format_output(output.val)
+        print('Result:' + res_str)
+        target = format_state(chacha20.state([555] + [0]*11))
         print('Should: ' + target)
 
-        assert('%0128X' % output.val == target) 
+        assert res_str == target
+
         for _ in range(30):
             rng = random.randrange(2**32)
             yield clock.negedge
-            data.next = rng
+            data.next[32*4:0] = rng
+            data.next[32*12:32*11] = rng
             start.next = True
             yield clock.negedge
             start.next = False
             yield done.posedge
 
-            print('Result: %0128X' % output.val)
-            target = ('%08X'*16) % tuple(reversed(chacha20.state([rng] + ([0] * 11))))
+            res_str = format_output(output.val)
+            print('Result: ' + res_str)
+            target = format_state(chacha20.state([rng] + ([0] * 10) + [rng]))
             print('Should: ' + target)
 
-            assert('%0128X' % output.val == target) 
+            assert res_str == target
 
 
     return dut, clockgen, check
@@ -116,7 +125,7 @@ def convert_core():
     reset = ResetSignal(False, True, False)
     start = Signal(bool(0))
     output = Signal(intbv(0, max=2**512))
-    
+ 
     c = core.core(data, done, output, start, clock, reset)
     c.convert(hdl='Verilog')
     
@@ -126,6 +135,7 @@ tb = testbench_core()
 tb.run_sim(duration=20000)
 tb.quit_sim()
 print('Done')
+# Enable conversion here to see the conversion error
 #convert_core()
 
 print('Running qround simulation')

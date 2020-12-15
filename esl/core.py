@@ -52,11 +52,16 @@ def q_round(ai, bi, ci, di, ao, bo, co, do):
 
 t_State = enum("WAITING", "CALCULATING")
 
+even_index = (0,4,8,12, 1,5,9,13, 2,6,10,14, 3,7,11,15)
+odd_index = (0,5,10,15, 1,6,11,12, 2,7,8,13, 3,4,9,14)
+
+iter_index = even_index + odd_index
+
 @block
 def core(data, done, output, start, clk, reset):
-    qsin = [Signal(uint32(0)) for _ in range(4*4)]
-    qsout = [Signal(uint32(0)) for _ in range(4*4)]
-    qs = [q_round(* (qsin[i*4:(i+1)*4] + qsout[i*4:(i+1)*4])) for i in range(4)]
+    qsin = [Signal(uint32(0)) for _ in range(16)]
+    qsout = [Signal(uint32(0)) for _ in range(16)]
+    qs = [q_round(*qsin[i*4:(i+1)*4], *qsout[i*4:(i+1)*4]) for i in range(4)]
     internal = intbv(0, max = 2**512)
     i = intbv(0, max = 20) 
 
@@ -71,10 +76,6 @@ def core(data, done, output, start, clk, reset):
 
 
     # indices for even and odd rounds 
-    iterindex = (
-        (0,4,8,12, 1,5,9,13, 2,6,10,14, 3,7,11,15),
-        (0,5,10,15, 1,6,11,12, 2,7,8,13, 3,4,9,14)
-    )
 
     @instance
     def logic():
@@ -94,22 +95,43 @@ def core(data, done, output, start, clk, reset):
             if state == t_State.WAITING:
                 if start:
                     i = intbv(0, min=0, max = 20)
-                    
 
                     internal[:] = data << (32*4) | constvec
                     done.next = False
                     state = t_State.CALCULATING
                     # start computing right away
-                    for v in zip(range(16), iterindex[i % 2]):
-                        qsin[v[0]].next = modbv(internal[32*(v[1]+1):32*v[1]], max=2**32)
 
-                    # Unfortuantely MyHDL is not able to expand above during
-                    # conversion. This would be very useful functionality.
+                    for j in range(16):
+                        # Issues with conversion start here
+                        # first I cannot get indexed access to constants
+                        # like the even_index:
+                        i_start = even_index[j]
+                        # I'm getting getting:
+                        # AttributeError: 'Name' object has no attribute 'value'
+                        i_end = i_start + 1
+                        qsin[j].next = uint32(internal[32*i_end:32*i_start])
+
+                        # I've tried to unroll the loop, like this:
+                        # qsin[0].next = internal[32:0]
+                        # qsin[1].next = internal[160:128]
+                        # but then qsin[0] access does not pass conversion
+                        # AttributeError: 'int' object has no attribute '_fields'
+
+                        # the bug seems to be located in myhdl/conversion/_analyze.py:L983
+                        # adding print(ast.dump(node)) at line 986 shows which line
+                        # the analyzer did not like
+
+                        # I've tried I think all possible options of removing this problem
+                        # but as it is still happening when trying to access a Signal
+                        # out of array I had to give up.
+
 
             elif state == t_State.CALCULATING:
                 # pull output of current round that was started before
-                for v in zip(range(16), iterindex[i % 2]):
-                    internal[32*(v[1]+1):32*v[1]] = qsout[v[0]]
+                for j in range(16):
+                    i_start = iter_index[(i%2)*16 + j]
+                    i_end = i_start+1
+                    internal[32*i_end:32*i_start] = qsout[j]
 
                 if i == 20 - 1:
                     output.next = internal
@@ -118,8 +140,10 @@ def core(data, done, output, start, clk, reset):
                 else:
                     i += 1
                     # start the next round
-                    for v in zip(range(16), iterindex[i % 2]):
-                        qsin[v[0]].next = modbv(internal[32*(v[1]+1):32*v[1]], max=2**32)
+                    for j in range(16):
+                        i_start = iter_index[(i%2)* 16+ j]
+                        i_end = i_start + 1
+                        qsin[j].next = uint32(internal[32*i_end:32*i_start])
 
     return logic, qs
 

@@ -33,7 +33,7 @@ def state(data):
   ctx[4:16] = data
 
   x = list(ctx)
-  for i in xrange(10):
+  for i in range(10):
     quarter_round(x, 0, 4,  8, 12)
     quarter_round(x, 1, 5,  9, 13)
     quarter_round(x, 2, 6, 10, 14)

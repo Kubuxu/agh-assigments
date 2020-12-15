@@ -19,8 +19,6 @@ Example of such projection is Random Gaussian Projection which projects points
 from space `R^N` to `R^M` by means of projection matrix (M, N) which elements are
 sampled from Normal Distribution with standard deviation of `1/sqrt(M)`.
 
-Add a short description here!
-
 
 ## LICENSE
 

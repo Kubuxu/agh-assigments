@@ -21,5 +21,7 @@ Due to issues in MyHDL I was not able to get the conversion of whole core to wor
 The primary cause seems to be inability to index any array or tuple within `for ... range` clause.
 See comments in `core.py` for better explanation.
 
+Other than that in the testbed the core works and computes ChaCha20 correctly.
+
 
 

@@ -56,18 +56,18 @@ def test_GaussianRandomProjection():
         Xnew = grp.transform(X)
 
         # collect distances between all vectors in X
-        org_dist = euclidean_distances(X)
+        org_dist = euclidean_distances(X, squared = True)
         # exclude distances between the point and itself
         non_self = np.eye(*org_dist.shape) == 0
         org_dist = org_dist[non_self]
 
-        new_dist = euclidean_distances(Xnew)
+        new_dist = euclidean_distances(Xnew, squared = True)
         new_dist = new_dist[non_self]
         ratios = new_dist / org_dist
 
         # verify that johnson lemma was held
-        assert (ratios < 1+eps).all()
-        assert (ratios > 1-eps).all()
+        assert (ratios < 1 + eps).all()
+        assert (ratios > 1 - eps).all()
 
 def test_GaussianRandomProjection_transfom_without_fit():
     rng = default_rng(42)

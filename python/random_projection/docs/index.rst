@@ -2,25 +2,25 @@
 random_projection
 =================
 
-This is the documentation of **random_projection**.
+**random_projection** package implements gaussian random probjection.
 
-.. note::
+Random Projection is a technique used to reduce dimenshionality of a dataset,
+while a the same time preserving inter-point Euclidian distances.
 
-    This is the main page of your project's `Sphinx`_ documentation.
-    It is formatted in `reStructuredText`_. Add additional pages
-    by creating rst-files in ``docs`` and adding them to the `toctree`_ below.
-    Use then `references`_ in order to link them from this page, e.g.
-    :ref:`authors` and :ref:`changes`.
+The resulting dimenshionality is a function of number of samples in the dataset,
+instead of the ininitial dimenshionality.
+This feature makes random projection idea for datasets with very high dimenshionality.
 
-    It is also possible to refer to the documentation of other Python packages
-    with the `Python domain syntax`_. By default you can reference the
-    documentation of `Sphinx`_, `Python`_, `NumPy`_, `SciPy`_, `matplotlib`_,
-    `Pandas`_, `Scikit-Learn`_. You can add more by extending the
-    ``intersphinx_mapping`` in your Sphinx's ``conf.py``.
+The random projection in governed by Johnson-Lindenstrauss lemma, which states that
+given some epsilon error (`0 < eps < 1`) and a set `X` of `m` points in `N` dimensions
+there exists a projection `R^N -> R^M` where `M << N` while preserving relative 
+distances between points with maximum `+-eps` error.
+The number of dimensions `M` depend only on number of points `m`.
 
-    The pretty useful extension `autodoc`_ is activated by default and lets
-    you include documentation from docstrings. Docstrings can be written in
-    `Google style`_ (recommended!), `NumPy style`_ and `classical style`_.
+Example of such projection is Random Gaussian Projection which projects points
+from space `R^N` to `R^M` by means of projection matrix (M, N) which elements are
+sampled from Normal Distribution with standard deviation of `1/sqrt(M)`.
+
 
 
 Contents

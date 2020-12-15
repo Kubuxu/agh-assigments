@@ -12,7 +12,7 @@ class GaussianRandomProjection:
     of a dataset through GaussianRandomProjection.
 
     Elements of the matrix are taken from normal distribution with deviation of
-    1/n_components.
+    1/`n_components_`.
 
     Parameters
     ----------
@@ -20,7 +20,7 @@ class GaussianRandomProjection:
         Number of dimensions after projection.
 
         Automatically adjusted using Johnson-Lindenstrauss lemma with parameter:
-        ``esp``.
+        `esp`.
         After fitting the attribute n_components_ is set to concrete numerical value.
 
     eps : float in (0, 1) range
@@ -29,7 +29,7 @@ class GaussianRandomProjection:
         according to Johnson-Lindenstrauss lemma.
 
         Values closer to 0 lead to higher quality embedding but to higher
-        dimensionality of resulting projection (n_components)
+        dimensionality of resulting projection (`n_components`)
 
     random_generator : int, Generator instance or None (default = None)
         Determines the random number generator used to generate the matrix

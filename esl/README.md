@@ -1,4 +1,4 @@
-## myhld-chacha20
+## MyHDL-chacha20
 
 ChaCha20 is stream cipher based on Salsa20 which was designed by Daniel Bernstein.
 It is one of the most used stream ciphers today.
